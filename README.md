@@ -5,7 +5,7 @@
 
 The playlist will be updated once a day whenever you run `iptv`.
 
-This repo is forked from [shahin8r/iptv](https://github.com/shahin8r/iptv)
+This repo is forked from [shahin8r/iptv](https://github.com/shahin8r/iptv).
 
 ## Additional features
 - Handy progress bar when parsing large files
@@ -18,6 +18,7 @@ This repo is forked from [shahin8r/iptv](https://github.com/shahin8r/iptv)
 - [mpv](https://github.com/mpv-player/mpv)
 
 All dependencies can be installed with your package manager.
+
 For example,
 ```bash
 sudo pacman -S curl fsf mpv
@@ -30,7 +31,8 @@ cd iptv-cli
 ```
 
 Run `iptv` with your playlist URL to load all the channels (only needed on first run).
-You can use iptv-org's iptv repo's m3u list:
+
+You can use for example [iptv-org's](https://github.com/iptv-org) [iptv repo's](https://github.com/iptv-org/iptv) m3u list:
 ```bash
 iptv https://iptv-org.github.io/iptv/index.m3u
 ```
