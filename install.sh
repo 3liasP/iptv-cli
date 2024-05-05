@@ -1,0 +1,1 @@
+sudo cp iptv.sh /usr/local/bin/iptv && sudo chmod +x /usr/local/bin/iptv
