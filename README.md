@@ -31,12 +31,22 @@ cd iptv-cli
 ./install.sh
 ```
 
-Run `iptv` with your playlist URL to load all the channels (only needed on first run).
+Run `iptv` with your playlist URL or filepath to load all the channels (only needed on first run).
 
 For example, you can use m3u playlist provided in [this repo](https://github.com/iptv-org/iptv) by [iptv-org](https://github.com/iptv-org).
 ```bash
-iptv "https://iptv-org.github.io/iptv/index.m3u"
+iptv -u "https://iptv-org.github.io/iptv/index.m3u"
+```
+
+Or alternatively using local file,
+```bash
+iptv -f ~/path/to/your/index.m3u
 ```
 
 ## Usage
 Run `iptv`.
+
+`iptv` will automatically update your remote playlist every 24 hours. Alternatively you can manually update by
+```bash
+iptv -r
+```
