@@ -14,10 +14,12 @@ mkdir -p "$config_path"
 
 usage() {
   cat <<EOF
-usage: iptv [M3U_URL]
+usage: iptv [options...] <m3u>
 
-    [M3U_URL]    URL to a M3U playlist, required on first run
-    --help       Display help
+    -h, --help       Get help for commands
+	-u, --url        Remote URL for the M3U file
+	-f, --file       Local file for the M3U file
+	-r, --refresh    Reload the current channel list
 EOF
 }
 
