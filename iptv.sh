@@ -64,7 +64,7 @@ save_channels() {
   printf "%s\n" "${channels[@]}" >$channels_file
 }
 
-while getopts ":f:u:r:h" opt; do
+while getopts ":f:u:hr" opt; do
   case ${opt} in
   f)
     m3u_file=$OPTARG
@@ -76,12 +76,12 @@ while getopts ":f:u:r:h" opt; do
   u)
     m3u_url=$OPTARG
     ;;
-  r)
-    save_channels
-    exit 0
-    ;;
   h)
     usage
+    exit 0
+    ;;
+  r)
+    save_channels
     exit 0
     ;;
   \?)
