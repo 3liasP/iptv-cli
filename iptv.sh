@@ -1,6 +1,12 @@
 #!/bin/bash
-command -v fzf >/dev/null 2>&1 || { echo >&2 "fzf required but not installed"; exit 1; }
-command -v mpv >/dev/null 2>&1 || { echo >&2 "mpv required but not installed"; exit 1; }
+command -v fzf >/dev/null 2>&1 || {
+  echo >&2 "fzf required but not installed"
+  exit 1
+}
+command -v mpv >/dev/null 2>&1 || {
+  echo >&2 "mpv required but not installed"
+  exit 1
+}
 
 m3u=$1
 
@@ -16,19 +22,22 @@ usage() {
   cat <<EOF
 usage: iptv [options...] <m3u>
 
-    -h, --help       Get help for commands
-	-u, --url        Remote URL for the M3U file
-	-f, --file       Local file for the M3U file
-	-r, --refresh    Reload the current channel list
+    -h    Get help for commands
+    -u    Remote URL for the M3U file
+    -f    Local file for the M3U file
+    -r    Reload the current channel list
 EOF
 }
 
 save_channels() {
-  m3u_url=$(cat "$m3u_url_file")
-
-  printf "\nLoading channels... "
-  curl -s "$m3u_url" | grep EXTINF: -A 2 >$tmp_playlist
-  printf "\nDone!\n"
+  if [ -f "$m3u_file" ]; then
+    cat "$m3u_file" >$tmp_playlist
+  else
+    m3u_url=$(cat "$m3u_url_file")
+    printf "\nLoading channels... "
+    curl -s "$m3u_url" | grep EXTINF: -A 2 >$tmp_playlist
+    printf "\nDone!\n"
+  fi
 
   printf "Parsing channels... "
   channels=()
@@ -55,21 +64,56 @@ save_channels() {
   printf "%s\n" "${channels[@]}" >$channels_file
 }
 
-if [ -z "$m3u" ] && [ ! -s "$channels_file" ]; then
+while getopts ":f:u:r:h" opt; do
+  case ${opt} in
+  f)
+    m3u_file=$OPTARG
+    if [ ! -f "$m3u_file" ]; then
+      echo "File not found!"
+      exit 1
+    fi
+    ;;
+  u)
+    m3u_url=$OPTARG
+    ;;
+  r)
+    save_channels
+    exit 0
+    ;;
+  h)
+    usage
+    exit 0
+    ;;
+  \?)
+    echo "Invalid option: $OPTARG" 1>&2
+    usage
+    exit 1
+    ;;
+  :)
+    echo "Invalid option: $OPTARG requires an argument" 1>&2
+    usage
+    exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ -z "$m3u_file" ] && [ -z "$m3u_url" ] && [ ! -s "$channels_file" ]; then
   usage
   exit 1
 fi
 
-if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
-  usage
-  exit 0
+if [ ! -z "$m3u_file" ]; then
+  cat "$m3u_file" >$m3u_url_file
+  save_channels
+  echo "Playlist saved from file. Now run iptv again without a M3U file."
+  exit
 fi
 
-if [ ! -z "$m3u" ]; then
-  echo "$m3u" > $m3u_url_file
+if [ ! -z "$m3u_url" ]; then
+  echo "$m3u_url" >$m3u_url_file
   save_channels
-
-  echo "Playlist saved. Now run iptv again without a M3U URL."
+  echo "Playlist saved from URL. Now run iptv again without a M3U URL."
   exit
 fi
 
@@ -99,5 +143,5 @@ if [ -f "$player_pid_file" ]; then
   fi
 fi
 
-mpv "$selected_channel_url" > /dev/null 2>&1 &
-echo $! > "$player_pid_file"
+mpv "$selected_channel_url" >/dev/null 2>&1 &
+echo $! >"$player_pid_file"
