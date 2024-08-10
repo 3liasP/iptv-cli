@@ -24,7 +24,7 @@ usage: iptv [options...] <m3u>
 
     -h    Get help for commands
     -u    Remote URL for the M3U file
-    -f    Local file for the M3U file
+    -f    Local filepath for the M3U file
     -r    Reload the current channel list
 EOF
 }

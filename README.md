@@ -21,7 +21,7 @@ All dependencies can be installed with your package manager.
 
 For example with Arch Linux,
 ```bash
-sudo pacman -S curl fsf mpv
+sudo pacman -S curl fzf mpv
 ```
 
 ## Installation
