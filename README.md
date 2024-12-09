@@ -3,16 +3,15 @@
 
 ![iptv](https://user-images.githubusercontent.com/4785263/228887981-3efb80a9-e40d-4076-b234-8fa737527018.gif)
 
-The playlist will be updated once a day whenever you run `iptv`.
-
 This repo is forked from [shahin8r/iptv](https://github.com/shahin8r/iptv).
 
 ## Additional features
-- Handy progress bar when parsing large files
+- Handy progress indicator when downloading and parsing large files
 - Support for more varied formats of m3u files
 - Support for local files and remote URLs
 - History of played channels
 - Option to update the playlist manually
+- Option to clear the history and temp files
 
 ## Dependencies
 - [curl](https://github.com/curl/curl)
@@ -24,6 +23,11 @@ All dependencies can be installed with your package manager.
 For example with Arch Linux,
 ```bash
 sudo pacman -S curl fzf mpv
+```
+
+On Debian-based systems, e.g. Ubuntu,
+```bash
+sudo apt install curl fzf mpv
 ```
 
 ## Installation
@@ -48,7 +52,11 @@ iptv -f ~/path/to/your/index.m3u
 ## Usage
 Run `iptv`.
 
-`iptv` will automatically update your remote playlist every 24 hours. Alternatively you can manually update by
+`iptv` will prompt you to update your remote playlist every week hours. Alternatively you can manually update by
 ```bash
 iptv -r
+```
+For help, run
+```bash
+iptv -h
 ```
