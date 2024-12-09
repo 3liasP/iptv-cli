@@ -28,6 +28,7 @@ usage: iptv [options...] <m3u>
     -f    Local filepath for the M3U file
     -r    Reload the current channel list
     -b    Browse history
+    -c    Clear history and associated files
 EOF
 }
 
@@ -36,9 +37,9 @@ save_channels() {
     cat "$m3u_file" >$tmp_playlist
   else
     m3u_url=$(cat "$m3u_url_file")
-    printf "\nLoading channels... "
-    curl -s "$m3u_url" | grep EXTINF: -A 2 >$tmp_playlist
-    printf "\nDone!\n"
+    echo "Loading channels... "
+    curl -# -o "$tmp_playlist" "$m3u_url"
+    printf "Done!\n"
   fi
 
   printf "Parsing channels... "
@@ -58,8 +59,11 @@ save_channels() {
       channels+=("$name [CH:${#channels[@]}] url:$url")
     fi
     ((line_number++))
-    printf "\rParsing channels... %d%%" $((line_number * 100 / total_lines))
+    if ((line_number % 100 == 0)); then
+      printf "\rParsing channels... %d%%" $((line_number * 100 / total_lines))
+    fi
   done <"$tmp_playlist"
+  printf "\rParsing channels... 100%%\n"
 
   printf "\nDone!\n"
 
@@ -73,7 +77,12 @@ update_history() {
   echo "$selected" >>"$history_file"
 }
 
-while getopts ":f:u:hrb" opt; do
+clear_history() {
+  rm -f "$history_file" "$channels_file" "$m3u_url_file" "$tmp_playlist" "$player_pid_file"
+  echo "History and associated files cleared."
+}
+
+while getopts ":f:u:hrbc" opt; do
   case ${opt} in
   f)
     m3u_file=$OPTARG
@@ -112,6 +121,10 @@ while getopts ":f:u:hrb" opt; do
     fi
     mpv "$selected_channel_url" >/dev/null 2>&1 &
     echo $! >"$player_pid_file"
+    exit 0
+    ;;
+  c)
+    clear_history
     exit 0
     ;;
   \?)
