@@ -117,9 +117,11 @@ if [ ! -z "$m3u_url" ]; then
   exit
 fi
 
-if [[ $(find "$channels_file" -mtime +1) ]]; then
-  printf "Doing a daily update of channels..\n"
-  save_channels
+if [[ $(find "$channels_file" -mtime +7) ]]; then
+  read -p "The channel list is older than a week. Do you want to refresh it now? (y/N): " refresh
+  if [[ "$refresh" == "y" ]]; then
+    save_channels
+  fi
 fi
 
 selected=$(cat "$channels_file" | sed 's/ [^ ]*$//' | fzf)
