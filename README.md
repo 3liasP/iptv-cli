@@ -10,7 +10,9 @@ This repo is forked from [shahin8r/iptv](https://github.com/shahin8r/iptv).
 ## Additional features
 - Handy progress bar when parsing large files
 - Support for more varied formats of m3u files
-- More coming soon...
+- Support for local files and remote URLs
+- History of played channels
+- Option to update the playlist manually
 
 ## Dependencies
 - [curl](https://github.com/curl/curl)

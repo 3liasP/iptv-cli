@@ -15,6 +15,7 @@ channels_file="$config_path/channels"
 m3u_url_file="$config_path/m3u_url"
 tmp_playlist="/tmp/iptvplaylist"
 player_pid_file="/tmp/iptvplayerpid"
+history_file="$config_path/history"
 
 mkdir -p "$config_path"
 
@@ -26,6 +27,7 @@ usage: iptv [options...] <m3u>
     -u    Remote URL for the M3U file
     -f    Local filepath for the M3U file
     -r    Reload the current channel list
+    -b    Browse history
 EOF
 }
 
@@ -64,7 +66,14 @@ save_channels() {
   printf "%s\n" "${channels[@]}" >$channels_file
 }
 
-while getopts ":f:u:hr" opt; do
+update_history() {
+  local selected="$1"
+  grep -vFx "$selected" "$history_file" >"$history_file.tmp"
+  mv "$history_file.tmp" "$history_file"
+  echo "$selected" >>"$history_file"
+}
+
+while getopts ":f:u:hrb" opt; do
   case ${opt} in
   f)
     m3u_file=$OPTARG
@@ -82,6 +91,27 @@ while getopts ":f:u:hr" opt; do
     ;;
   r)
     save_channels
+    exit 0
+    ;;
+  b)
+    selected=$(cat "$history_file" | fzf)
+    if [ ! -n "$selected" ]; then
+      exit 1
+    fi
+    update_history "$selected"
+    selected_channel=$(echo "$selected" | sed 's/.*\(\[CH:[0-9]\+\]\).*/\1/')
+    selected_channel_line=$(cat "$channels_file" | grep -F "$selected_channel")
+    selected_channel_url=$(echo "$selected_channel_line" | grep -oE 'url:(.*)' | sed 's/url://' | tr -d '\r')
+    selected_channel_name=$(echo "$selected_channel_line" | sed 's/\(.*\) url:.*/\1/')
+    printf "Playing %s from %s" "$selected_channel_url" "$selected_channel_name"
+    if [ -f "$player_pid_file" ]; then
+      player_pid=$(cat "$player_pid_file")
+      if kill -0 "$player_pid" >/dev/null 2>&1; then
+        kill "$player_pid"
+      fi
+    fi
+    mpv "$selected_channel_url" >/dev/null 2>&1 &
+    echo $! >"$player_pid_file"
     exit 0
     ;;
   \?)
@@ -129,6 +159,8 @@ selected=$(cat "$channels_file" | sed 's/ [^ ]*$//' | fzf)
 if [ ! -n "$selected" ]; then
   exit 1
 fi
+
+update_history "$selected"
 
 selected_channel=$(echo "$selected" | sed 's/.*\(\[CH:[0-9]\+\]\).*/\1/')
 selected_channel_line=$(cat "$channels_file" | grep -F "$selected_channel")
