@@ -38,8 +38,7 @@ save_channels() {
   else
     m3u_url=$(cat "$m3u_url_file")
     echo "Loading channels... "
-    curl -# -o "$tmp_playlist" "$m3u_url"
-    printf "Done!\n"
+    curl -o "$tmp_playlist" "$m3u_url"
   fi
 
   printf "Parsing channels... "
@@ -64,8 +63,6 @@ save_channels() {
     fi
   done <"$tmp_playlist"
   printf "\rParsing channels... 100%%\n"
-
-  printf "\nDone!\n"
 
   printf "%s\n" "${channels[@]}" >$channels_file
 }
