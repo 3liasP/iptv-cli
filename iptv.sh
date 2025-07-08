@@ -100,7 +100,7 @@ while getopts ":f:u:hrbc" opt; do
     exit 0
     ;;
   b)
-    selected=$(cat "$history_file" | fzf)
+    selected=$(cat "$history_file" | fzf --tac)
     if [ ! -n "$selected" ]; then
       exit 1
     fi
